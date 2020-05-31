@@ -18,7 +18,7 @@ namespace WhaleEcommerce.Infrastructure.Mappings
             builder.Property(p => p.Description)
                 .HasColumnType("varchar(350)");
 
-            builder.ToTable("Books");
+            builder.ToTable("Products");
         }
     }
 }
