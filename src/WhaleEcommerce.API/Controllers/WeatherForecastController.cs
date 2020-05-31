@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WhaleEcommerce.API.Extensions;
 
 namespace WhaleEcommerce.API.Controllers
 {
+    [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -24,6 +27,7 @@ namespace WhaleEcommerce.API.Controllers
         }
 
         [HttpGet]
+        //[ClaimsAuthorize("test","test2")]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
