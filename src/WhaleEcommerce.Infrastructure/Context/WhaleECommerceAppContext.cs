@@ -3,12 +3,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using WhaleEcommerce.Domain.Models;
 
 namespace WhaleEcommerce.Infrastructure.Context
 {
-    public class MyDbContext : DbContext
+    public class WhaleECommerceAppContext : DbContext
     {
-        public MyDbContext(DbContextOptions<MyDbContext> options) : base(options) { }
+        public WhaleECommerceAppContext(DbContextOptions<WhaleECommerceAppContext> options) : base(options) { }
+
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -17,7 +21,7 @@ namespace WhaleEcommerce.Infrastructure.Context
                     .Where(p => p.ClrType == typeof(string))))
                 property.SetColumnType("varchar(100)");
 
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(MyDbContext).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(WhaleECommerceAppContext).Assembly);
 
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys())) relationship.DeleteBehavior = DeleteBehavior.ClientSetNull;
 

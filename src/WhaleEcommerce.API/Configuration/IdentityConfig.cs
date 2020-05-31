@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using WhaleEcommerce.API.Data;
 using WhaleEcommerce.API.Extensions;
+using WhaleEcommerce.Infrastructure.Context;
 
 namespace WhaleEcommerce.API.Configuration
 {
