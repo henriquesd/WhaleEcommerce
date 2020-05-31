@@ -12,10 +12,10 @@ namespace WhaleEcommerce.Infrastructure.Repositories
 {
     public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity, new()
     {
-        protected readonly MyDbContext Db;
+        protected readonly WhaleECommerceAppContext Db;
         protected readonly DbSet<TEntity> DbSet;
 
-        protected Repository(MyDbContext db)
+        protected Repository(WhaleECommerceAppContext db)
         {
             Db = db;
             DbSet = db.Set<TEntity>();
