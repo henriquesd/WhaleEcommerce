@@ -10,12 +10,6 @@ namespace WhaleEcommerce.Infrastructure.Repositories
     public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
         public CategoryRepository(WhaleECommerceAppContext context) : base(context) { }
-
-        public async Task<Category> GetCategoryProduct(Guid id)
-        {
-            return await Db.Categories.AsNoTracking()
-                .Include(c => c.Products)
-                .FirstOrDefaultAsync(c => c.Id == id);
-        }
+      
     }
 }

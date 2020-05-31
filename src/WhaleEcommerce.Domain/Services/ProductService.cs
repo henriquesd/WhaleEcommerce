@@ -35,12 +35,7 @@ namespace WhaleEcommerce.Domain.Services
 
         public async Task<bool> Remove(Guid id)
         {
-            var product = await _productRepository.GetById(id);
-
-            if (product == null) return false;
-
             await _productRepository.Remove(id);
-
             return true;
         }
 

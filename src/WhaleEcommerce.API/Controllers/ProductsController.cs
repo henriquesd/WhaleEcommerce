@@ -38,7 +38,7 @@ namespace WhaleEcommerce.API.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<ProductDto>> GetById(Guid id)
         {
-            var productDto = await GetById(id);
+            var productDto = await GetProduct(id);
 
             if (productDto == null) return NotFound();
 

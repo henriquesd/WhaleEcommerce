@@ -35,14 +35,9 @@ namespace WhaleEcommerce.Domain.Services
 
         public async Task<bool> Remove(Guid id)
         {
-            if (_categoryRepository.GetCategoryProduct(id).Result.Products.Any()) return false;
-
-            var category = await _categoryRepository.GetById(id);
-
-            if (category == null) return false;
-             
             await _categoryRepository.Remove(id);
-                return true;
+            
+            return true;
         }
 
         public void Dispose()
