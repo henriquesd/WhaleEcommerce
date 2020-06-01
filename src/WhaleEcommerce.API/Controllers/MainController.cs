@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using WhaleEcommerce.Domain.Interfaces;
+using WhaleEcommerce.Domain.Notifications;
 
 namespace WhaleEcommerce.API.Controllers
 {
@@ -10,44 +11,60 @@ namespace WhaleEcommerce.API.Controllers
     public abstract class MainController : Controller
     {
         protected ICollection<string> Errors = new List<string>();
+        private readonly INotifyer _notifyer;
 
+        public MainController(INotifyer notifyer)
+        {
+            _notifyer = notifyer;
+
+        }
         protected ActionResult CustomResponse(object result = null)
         {
             if (ValidOperation())
             {
-                return Ok(result);
+                return Ok(new
+                {
+                    success = true,
+                    data = result
+                });
             }
 
-            return BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>
+            return BadRequest(new
             {
-                {"Messages", Errors.ToArray()}
-            }));
+                success = false,
+                errors = _notifyer.GetNotifications().Select(n => n.Message)
+            });
         }
 
         protected ActionResult CustomResponse(ModelStateDictionary modelState)
         {
-            var errors = modelState.Values.SelectMany(e => e.Errors);
-            foreach (var error in errors)
-            {
-                AddErrorHandler(error.ErrorMessage);
-            }
-
+            if (!modelState.IsValid) NotifyErrorInvalidModel(modelState);
             return CustomResponse();
+        }
+
+        protected void NotifyErrorInvalidModel(ModelStateDictionary modelState)
+        {
+            var erros = modelState.Values.SelectMany(e => e.Errors);
+            foreach (var erro in erros)
+            {
+                var errorMsg = erro.Exception == null ? erro.ErrorMessage : erro.Exception.Message;
+                NotifyError(errorMsg);
+            }
+        }
+
+        protected void NotifyError(string message)
+        {
+            _notifyer.Handle(new Notification(message));
         }
 
         protected bool ValidOperation()
         {
-            return !Errors.Any();
+            return !_notifyer.HasNotification();
         }
 
         protected void AddErrorHandler(string error)
         {
             Errors.Add(error);
-        }
-
-        protected void ClearErrorsHandler()
-        {
-            Errors.Clear();
         }
     }
 }

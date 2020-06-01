@@ -21,7 +21,8 @@ namespace WhaleEcommerce.API.Controllers
 
         public ProductsController(IProductRepository productRepository,
                                   IProductService productService,
-                                  IMapper mapper)
+                                  IMapper mapper,
+                                  INotifyer notifyer) : base(notifyer)
         {
             _productRepository = productRepository;
             _productService = productService;

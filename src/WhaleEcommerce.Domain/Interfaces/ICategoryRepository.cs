@@ -6,5 +6,6 @@ namespace WhaleEcommerce.Domain.Interfaces
 {
     public interface ICategoryRepository : IRepository<Category>
     {
+        Task<Category> GetCategoryProducts(Guid id);
     }
 }
