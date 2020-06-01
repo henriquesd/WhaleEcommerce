@@ -11,6 +11,7 @@ using WhaleEcommerce.API.Dtos.Account;
 using WhaleEcommerce.API.Extensions;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using WhaleEcommerce.Domain.Interfaces;
 
 namespace WhaleEcommerce.API.Controllers
 {
@@ -22,8 +23,9 @@ namespace WhaleEcommerce.API.Controllers
         private readonly AppSettings _appSettings;
 
         public AuthController(SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager,
-            IOptions<AppSettings> appSettings) : base()
+                                UserManager<IdentityUser> userManager,
+                                IOptions<AppSettings> appSettings,
+                                INotifyer notifyer) : base(notifyer)
         {
             _signInManager = signInManager;
             _userManager = userManager;

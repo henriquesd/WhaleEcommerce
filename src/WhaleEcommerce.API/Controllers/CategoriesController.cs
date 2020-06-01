@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using WhaleEcommerce.API.Dtos;
 using WhaleEcommerce.API.Extensions;
 using WhaleEcommerce.Domain.Interfaces;
@@ -21,7 +22,8 @@ namespace WhaleEcommerce.API.Controllers
 
         public CategoriesController(ICategoryRepository categoryRepository,
                                     IMapper mapper,
-                                    ICategoryService categoryService)
+                                    ICategoryService categoryService,
+                                    INotifyer notifyer) : base(notifyer)
         {
             _categoryRepository = categoryRepository;
             _mapper = mapper;
@@ -36,9 +38,12 @@ namespace WhaleEcommerce.API.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<CategoryDto> GetById(Guid id)
+        public async Task<ActionResult<CategoryDto>> GetById(Guid id)
         {
             var category = _mapper.Map<CategoryDto>(await _categoryRepository.GetById(id));
+
+            if (category == null) return NotFound();
+
             return category;
         }
 
@@ -46,27 +51,28 @@ namespace WhaleEcommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult<CategoryDto>> Add(CategoryDto categoryDto)
         {
-            if (!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var category = _mapper.Map<Category>(categoryDto);
-            var result = await _categoryService.Add(category);
+            await _categoryService.Add(_mapper.Map<Category>(categoryDto));
 
-            if (!result) return BadRequest();
-
-            return Ok(category);
+            return CustomResponse(categoryDto);
         }
 
         [ClaimsAuthorize("Category", "Update")]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<CategoryDto>> Update(Guid id, CategoryDto categoryDto)
         {
-            if (id != categoryDto.Id) return BadRequest();
+            if (id != categoryDto.Id)
+            {
+                NotifyError("The informed id is not the same id on the query");
+                return CustomResponse(categoryDto);
+            }
 
-            if (!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
 
             await _categoryService.Update(_mapper.Map<Category>(categoryDto));
 
-            return Ok(categoryDto);
+            return CustomResponse(categoryDto);
         }
 
         [ClaimsAuthorize("Category", "Remove")]
@@ -75,7 +81,7 @@ namespace WhaleEcommerce.API.Controllers
         {
             await _categoryService.Remove(id);
 
-            return Ok();
+            return CustomResponse();
         }
     }
 }
